@@ -4,6 +4,7 @@ Technical choices :
 - For the backend server python-drf
 - For the database : PostgreSQL
 - For the authentication JWT
+- For test pytest
 - For the frontend vite-react
 
 
@@ -25,6 +26,8 @@ How to luanch the project :
      - docker compose up
      - docker compose exec backend python manage.py migrate
  The backend server should be working right now on port 8000  (localhost:8000)
+
+- to run the tests you should run this commande line : docker compose exec backend pytest -q
 
 
 
