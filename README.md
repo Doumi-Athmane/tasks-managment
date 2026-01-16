@@ -37,4 +37,7 @@ How to luanch the project :
   The frontend should be working on the port 3000 (localhost:3000)
 
 
+The API documentation is in API_DOCUMENTATION.md
+
+
 
