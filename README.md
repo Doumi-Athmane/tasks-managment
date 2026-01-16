@@ -23,6 +23,7 @@ How to luanch the project :
  - to start the server you should run those two commandes line : 
      - docker compose build
      - docker compose up
+     - docker compose exec backend python manage.py migrate
  The backend server should be working right now on port 8000  (localhost:8000)
 
 
