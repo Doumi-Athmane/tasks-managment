@@ -6,6 +6,8 @@ import TaskForm from './components/TaskForm';
 import Button from './components/Button';
 import LoginPage from './components/LoginPage';
 import TaskDetailsModal from './components/TaskDetails';
+import Toast, { ToastMessage, ToastType } from './components/Toast';
+
 
 import { getTasks, createTask, updateTask, deleteTask , assignTask, unAssignTask, closeTask,  } from "./api/tasks";
 import { getUsers } from "./api/users";
@@ -26,7 +28,25 @@ const App: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<TaskStatus | 'all'>('all');
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
   
+
+  const notify = (message: unknown, type: ToastType = "success") => {
+    const id = Math.random().toString(36).substring(7);
+
+    const text =
+      message instanceof Error
+        ? message.message
+        : typeof message === "string"
+        ? message
+        : JSON.stringify(message);
+
+    setToasts((prev) => [...prev, { id, message: text, type }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
 useEffect(() => {
   if (!isLoggedIn) {
@@ -88,9 +108,9 @@ useEffect(() => {
       const created = await createTask(newTaskData);
       setTasks((prev) => [created, ...prev]);
       setIsFormOpen(false);
+      notify("Task created successfully");
     } catch (e) {
-      console.error("Create failed", e);
-      alert("Failed to create task");
+      notify(e.message, "error");
     }
   };
 
@@ -100,9 +120,10 @@ useEffect(() => {
       const updated = await updateTask(editingTask.id, updatedData);
       setTasks(tasks.map(t => t.id === updated.id ? updated : t));
       setEditingTask(null);
+      notify("Task updated successfully");
     } catch (e) {
       console.error("Update failed", e);
-      alert("Failed to update task");
+      notify(e.message, "error");
     }
   };
 
@@ -111,9 +132,9 @@ useEffect(() => {
       try {
         const deleted = await deleteTask(id);
         setTasks(tasks.filter(t => t.id === deleted.id ? deleted : t));
+        notify("Task deleted successfully");
       } catch (e) {
-        console.error("Delete failed", e);
-        alert("Failed to delete task");
+        notify(e.message, "error");
       }
     }
   };
@@ -122,8 +143,9 @@ useEffect(() => {
     try {
       const updated = await assignTask(taskId, userId);
       setTasks((prev) => prev.map((t) => (t.id === taskId ? updated : t)));
+      notify("Task assigned successfully");
     } catch (e) {
-      console.error("Assign failed", e);
+      notify(e.message, "error");
     }
   };
 
@@ -131,17 +153,21 @@ useEffect(() => {
     try {
       const updated = await unAssignTask(taskId);
       setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+      notify("Task unassigned successfully");
     } catch (e) {
-      console.error("Unassign failed", e);
+      notify(e.message, "error");
     }
   };
 
   const handleCloseTask = async (taskId: number) => {
-    try {
-      const updated = await closeTask(taskId);
-      setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
-    } catch (e) {
-      console.error("Close failed", e);
+    if (window.confirm("Are you sure you want to close this task?")) {
+      try {
+        const updated = await closeTask(taskId);
+        setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+        notify("Task closed successfully");
+      } catch (e) {
+        notify(e.message, "error");
+      }
     }
   };
 
@@ -304,6 +330,8 @@ useEffect(() => {
           )}
         </div>
       </main>
+
+      <Toast toasts={toasts} onRemove={removeToast} />
 
       {/* Task Details Popup */}
       {activeTaskDetails && (

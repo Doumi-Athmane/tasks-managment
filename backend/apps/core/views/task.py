@@ -39,10 +39,10 @@ class TaskViewSet(viewsets.ModelViewSet):
         """
         task = Task.objects.select_for_update().get(pk=pk) # Lock the task row for update
         if task.status in [Task.Status.CLOSED, Task.Status.DELETED]: # Cannot assign closed or deleted tasks
-            return Response({'error': 'Cannot assign a closed or deleted task'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response('Cannot assign a closed or deleted task', status=status.HTTP_400_BAD_REQUEST)
         user_id = request.data.get('assigned_to')
         if not user_id:
-            return Response({'error': 'user to assign is required'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response('user to assign is required', status=status.HTTP_400_BAD_REQUEST)
         user = User.objects.get(pk=user_id) if user_id else None
         task.history_record( # Log the assignment in task history
             changed_by=request.user,
@@ -65,7 +65,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         """
         task = Task.objects.select_for_update().get(pk=pk) # Lock the task row for update
         if task.status != Task.Status.ASSIGNED:# Only assigned tasks can be unassigned
-            return Response({'error': 'Only assigned tasks can be unassigned'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response('Only assigned tasks can be unassigned', status=status.HTTP_400_BAD_REQUEST)
         task.history_record(
             changed_by=request.user,
             previous_status=task.status,
@@ -86,7 +86,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         """
         task = Task.objects.select_for_update().get(pk=pk) # Lock the task row for update
         if task.status != Task.Status.ASSIGNED: # Only assigned tasks can be closed
-            return Response({'error': 'Only assigned tasks can be closed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response('Only assigned tasks can be closed', status=status.HTTP_400_BAD_REQUEST)
         task.history_record(
             changed_by=request.user,
             previous_status=task.status,
@@ -106,7 +106,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         """
         task = Task.objects.select_for_update().get(pk=pk)
         if task.status == Task.Status.DELETED:
-            return Response({'error': 'Task is already deleted'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response('Task is already deleted', status=status.HTTP_400_BAD_REQUEST)
         task.history_record(
             changed_by=request.user,
             previous_status=task.status,
