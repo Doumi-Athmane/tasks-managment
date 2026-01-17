@@ -224,6 +224,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             <p className="text-gray-500 text-sm">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
               <button 
+                type="button"
                 onClick={toggleMode}
                 className="text-indigo-600 font-bold hover:text-indigo-700 transition-colors focus:outline-none"
               >

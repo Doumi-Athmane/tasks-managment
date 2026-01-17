@@ -17,7 +17,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers,
   });
 
-    if (res.status === 401) {
+  if (res.status === 401 && path !== "/auth/login/" && path !== "/auth/register/") {
     logoutAndRedirect();
     throw new Error("Unauthorized");
   }
