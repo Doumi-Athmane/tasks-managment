@@ -9,7 +9,7 @@ Technical choices :
 
 
 
-How to luanch the project : 
+How to run the project : 
 
 1. Backend :
  - create a file .env in the backend folder (backend/.env)
